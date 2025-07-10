@@ -429,6 +429,17 @@
 		let startTime = 0;
 		let frameCount = 0;
 		let animationId = null;
+		let contextLost = false; // Track if context is lost
+
+		// Add error message element
+		const errorDiv = document.createElement('div');
+		errorDiv.className = 'loading';
+		errorDiv.style.display = 'none';
+		errorDiv.style.color = '#ff4444';
+		errorDiv.style.fontWeight = 'bold';
+		errorDiv.style.marginTop = '15px';
+		errorDiv.id = 'errorMsg';
+		document.querySelector('.controls').appendChild(errorDiv);
 
 		function resizeCanvas() {
 			canvas.width = window.innerWidth;
@@ -438,8 +449,18 @@
 		window.addEventListener('resize', resizeCanvas);
 		resizeCanvas();
 
+		// Handle WebGL context lost
+		canvas.addEventListener('webglcontextlost', function (e) {
+			e.preventDefault();
+			contextLost = true;
+			stopBenchmark();
+			document.getElementById('errorMsg').textContent = 'WebGL context lost. Please reload the page.';
+			document.getElementById('errorMsg').style.display = 'block';
+			document.getElementById('startBtn').disabled = true;
+		});
+
 		function render() {
-			if (!isRunning) return;
+			if (!isRunning || contextLost) return;
 			let elapsed = (performance.now() - startTime) / 1000;
 
 			// Render to framebuffer
@@ -484,6 +505,7 @@
 		}
 
 		function startBenchmark() {
+			if (contextLost) return;
 			isRunning = true;
 			startTime = performance.now();
 			frameCount = 0;
