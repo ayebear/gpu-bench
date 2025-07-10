@@ -132,7 +132,8 @@
 		<div class="result" id="result"></div>
 		<div class="info">
 			3840x2160 output resolution<br>
-			4096x4096 noise texture
+			4096x4096 noise texture<br>
+			20 samples per pixel
 		</div>
 	</div>
 
@@ -203,7 +204,6 @@
             vec2 flowUV = uv;
             float totalWeight = 0.0;
 
-            // 32 texture samples with complex positioning
             for (int i = 0; i < SAMPLES_PER_PIXEL; i++) {
                 float fi = float(i);
 
